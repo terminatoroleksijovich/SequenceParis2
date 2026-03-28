@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#0A0A0A] selection:bg-[#AF8F5C] selection:text-white">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequence Paris | Premium English Speaking Hair Salon</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/splitting/dist/splitting.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; color: #E5E5E5; overflow-x: hidden; }
+        h1, h2, h3, .logo { font-family: 'Space Grotesk', sans-serif; color: #FFFFFF; }
+        
+        .char { opacity: 0; transform: translateY(20px); }
+        
+        .glass-nav {
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hero-gradient {
+            background: linear-gradient(to bottom, transparent 0%, #0A0A0A 100%);
+        }
+
+        .btn-premium {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .btn-premium:hover {
+            box-shadow: 0 0 20px rgba(175, 143, 92, 0.3);
+            transform: translateY(-2px);
+        }
+        .btn-premium:active {
+            transform: translateY(0);
+        }
+
+        #cursor {
+            width: 10px; height: 10px; background: #AF8F5C; border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        @media (hover: none) and (pointer: coarse) {
+            #cursor { display: none !important; }
+        }
+
+        .hero-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 2rem;
+            gap: 0;
+        }
+        @media (max-width: 767px) {
+            .hero-info-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .hero-info-grid > div {
+                border-right: none !important;
+                border-left: none !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                padding-bottom: 1.5rem;
+                border-bottom: 1px solid rgba(255,255,255,0.07);
+            }
+            .hero-info-grid > div:last-child { border-bottom: none; }
+        }
+
+        .service-card {
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            filter: grayscale(100%) brightness(0.5);
+        }
+        @media (min-width: 768px) {
+            .service-card { height: 600px; flex: 1; }
+            .service-card:hover {
+                filter: grayscale(0%) brightness(1);
+                flex: 2;
+            }
+        }
+        @media (max-width: 767px) {
+            .service-card {
+                height: 260px;
+                width: 100%;
+                filter: grayscale(0%) brightness(0.75);
+            }
+        }
+
+        .text-outline {
+            -webkit-text-stroke: 1px rgba(175, 143, 92, 0.5);
+            color: transparent;
+        }
+
+        .social-link {
+            display: flex; align-items: center; gap: 12px;
+            transition: all 0.3s ease;
+        }
+        .social-link:hover { color: #AF8F5C; transform: translateX(5px); }
+        .social-link i { width: 18px; height: 18px; opacity: 0.6; }
+        .social-link:hover i { opacity: 1; }
+
+        /* ИСПРАВЛЕННЫЙ БЛОК ОТЗЫВОВ */
+        .marquee {
+            display: flex; 
+            overflow: hidden; 
+            user-select: none; 
+            gap: 2rem;
+            mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+        }
+        .marquee__group {
+            flex-shrink: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-start; /* Фиксирует карточки в ряд */
+            gap: 2rem; 
+            min-width: 100%;
+            animation: scroll 40s linear infinite;
+        }
+        /* Остановка при наведении */
+        .marquee:hover .marquee__group {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll {
+            from { transform: translateX(0); }
+            to   { transform: translateX(calc(-100% - 2rem)); }
+        }
+
+        .review-card {
+            width: 320px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 1.75rem;
+            border-radius: 4px;
+            flex-shrink: 0;
+            transition: background 0.3s ease;
+        }
+        .review-card:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .tripadvisor-badge {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: #AF8F5C; color: white;
+            padding: 8px 16px; border-radius: 2px;
+            font-size: 10px; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        #mobile-menu {
+            display: none;
+            flex-direction: column;
+            position: fixed;
+            inset: 0;
+            background: #0A0A0A;
+            z-index: 40;
+            padding: 6rem 2.5rem 3rem;
+            gap: 2rem;
+        }
+        #mobile-menu.open { display: flex; }
+        #mobile-menu a {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem; font-weight: 700;
+            letter-spacing: -0.02em; color: #fff;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding-bottom: 1.25rem;
+        }
+
+        #hamburger { display: none; }
+        @media (max-width: 1023px) {
+            #hamburger { display: flex; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+
+    <div id="mobile-menu">
+        <a href="#truth"    onclick="closeMobileMenu()">01. Philosophy</a>
+        <a href="#expertise" onclick="closeMobileMenu()">02. Services</a>
+        <a href="#reviews"  onclick="closeMobileMenu()">03. Testimonials</a>
+        <a href="#contact"  onclick="closeMobileMenu()">04. Contact</a>
+        <div class="mt-auto flex flex-col gap-4">
+            <a href="mailto:contact@sequenceparis.com" class="social-link text-sm text-gray-400">
+                <i data-lucide="mail"></i> Email Us
+            </a>
+            <a href="tel:+33183064677" class="social-link text-sm text-gray-400">
+                <i data-lucide="phone"></i> 01 83 06 46 77
+            </a>
+        </div>
+    </div>
+
+    <header class="fixed top-0 w-full z-50 glass-nav px-5 sm:px-10 py-4 sm:py-5 flex justify-between items-center">
+        <div class="logo text-xl sm:text-2xl font-bold tracking-tighter uppercase text-white">SEQUENCE PARIS</div>
+
+        <nav class="hidden lg:flex gap-10 items-center">
+            <a href="#truth"    class="text-[10px] tracking-[0.2em] uppercase hover:text-[#AF8F5C] transition-opacity opacity-60 hover:opacity-100">01. Philosophy</a>
+            <a href="#expertise" class="text-[10px] tracking-[0.2em] uppercase hover:text-[#AF8F5C] transition-opacity opacity-60 hover:opacity-100">02. Services</a>
+            <a href="#reviews"  class="text-[10px] tracking-[0.2em] uppercase hover:text-[#AF8F5C] transition-opacity opacity-60 hover:opacity-100">03. Legacy</a>
+            <a href="#contact"  class="text-[10px] tracking-[0.2em] uppercase hover:text-[#AF8F5C] transition-opacity opacity-60 hover:opacity-100">04. Contact</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <span class="hidden sm:block text-[10px] text-[#AF8F5C] tracking-widest uppercase text-right">Latin Quarter / 75005</span>
+            <a href="#contact" class="btn-premium bg-white text-black px-5 sm:px-8 py-2.5 sm:py-3 text-[10px] sm:text-[11px] font-bold tracking-widest uppercase rounded-[2px]">
+                Book Now
+            </a>
+            <button id="hamburger" onclick="toggleMobileMenu()"
+                class="w-10 h-10 flex flex-col justify-center items-center gap-[5px] z-50">
+                <span id="hb-top"    class="block w-6 h-[1.5px] bg-white transition-all duration-300"></span>
+                <span id="hb-mid"    class="block w-6 h-[1.5px] bg-white transition-all duration-300"></span>
+                <span id="hb-bottom" class="block w-4 h-[1.5px] bg-white transition-all duration-300 self-start"></span>
+            </button>
+        </div>
+    </header>
+
+    <section class="hero-section relative w-full flex flex-col justify-end pb-16 sm:pb-20 px-5 sm:px-10 overflow-hidden" style="min-height: 100svh;">
+        <div class="absolute inset-0 z-0" id="hero-container">
+            <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=2000&auto=format&fit=crop"
+                 id="hero-bg"
+                 class="w-full h-full object-cover grayscale brightness-[0.3] scale-125"
+                 alt="Parisian Salon">
+            <div class="absolute inset-0 hero-gradient"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-[1800px] mx-auto">
+            <div class="mb-8 sm:mb-12">
+                <p class="text-[9px] sm:text-[10px] tracking-[0.3em] uppercase text-[#AF8F5C] mb-3 sm:mb-4 overflow-hidden">
+                    <span class="inline-block translate-y-full" id="hero-mini-tag">English Speaking Hair Boutique in Paris 5</span>
+                </p>
+                <h1 class="text-[13vw] sm:text-[10vw] md:text-[8vw] font-bold leading-[0.85] tracking-tighter text-white uppercase" data-splitting id="main-title">
+                    LONDON EDGE.<br>PARIS CHIC.
+                </h1>
+            </div>
+
+            <div class="hero-info-grid opacity-0" id="hero-stats">
+                <div class="pr-0 sm:pr-10 border-r-0 sm:border-r border-white/10">
+                    <span class="text-[9px] sm:text-[10px] tracking-[0.3em] uppercase block mb-3 sm:mb-4 text-[#AF8F5C]">No Language Barrier</span>
+                    <p class="text-xs sm:text-sm text-[#888] leading-relaxed max-w-[300px]">
+                        Communication is the key to a perfect cut. We speak your language fluently, ensuring your vision is understood perfectly before the first snip.
+                    </p>
+                </div>
+                <div class="px-0 sm:px-10 border-r-0 sm:border-r border-white/10">
+                    <span class="text-[9px] sm:text-[10px] tracking-[0.3em] uppercase block mb-3 sm:mb-4 text-[#AF8F5C]">Emma's Chair</span>
+                    <p class="text-xs sm:text-sm text-[#888] leading-relaxed">
+                        L'Oréal Professionnel Certified<br>Master of London Precision<br>Dedicated Expat Specialist
+                    </p>
+                </div>
+                <div class="pl-0 sm:pl-10 flex flex-col justify-between gap-4 italic text-white/40">
+                    <p class="text-xs">"Hair is the only luxury accessory you never take off. My mission is to make sure it's your most confident one every single day."</p>
+                    <div class="flex gap-3 flex-wrap">
+                        <span class="text-[9px] border border-[#AF8F5C]/20 px-2 py-1 uppercase text-[#AF8F5C]">L'Oréal Master</span>
+                        <span class="text-[9px] border border-[#AF8F5C]/20 px-2 py-1 uppercase text-[#AF8F5C]">Precision Cutting</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="truth" class="py-16 sm:py-24 bg-white">
+        <div class="px-5 sm:px-10 max-w-7xl mx-auto">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-10 gap-4">
+                <span class="text-[10px] tracking-[0.3em] uppercase block font-bold text-[#AF8F5C]">01 — The Luxury Standard</span>
+                <div class="tripadvisor-badge">
+                    <i data-lucide="award" class="w-4 h-4"></i>
+                    Highly Recommended by Expats
+                </div>
+            </div>
+            <h2 class="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter leading-none mb-8 sm:mb-12 reveal text-black">
+                STOP WORRYING ABOUT <br class="hidden sm:block"> THE "PARISIAN SNUB".
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
+                <div class="reveal">
+                    <p class="text-lg sm:text-xl leading-tight font-medium mb-5 sm:mb-6 text-gray-900">
+                        Most international residents fear a trip to the hairdresser in Paris. The language barrier leads to expensive mistakes, and the service often feels intimidating.
+                    </p>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-4">
+                        At Sequence Paris, we've built a sanctuary for the international community. We understand that your hair is tied to your identity, and in a foreign city, you need a stylist who truly listens. 
+                    </p>
+                    <p class="text-sm text-gray-500 leading-relaxed">
+                        We combine the technical excellence of London's finest hair academies with the welcoming, bilingual atmosphere of a boutique salon in the heart of the Latin Quarter. No more anxiety—just world-class artistry.
+                    </p>
+                </div>
+                <div class="reveal space-y-5 sm:space-y-6">
+                    <div class="p-5 sm:p-6 border-l-2 border-[#AF8F5C]">
+                        <h4 class="font-bold text-xs uppercase tracking-widest mb-2 text-black">The Custom Philosophy</h4>
+                        <p class="text-sm text-gray-500">We don't believe in "one size fits all." Every appointment begins with an in-depth consultation where we analyze your face shape, daily routine, and hair texture to create a bespoke look.</p>
+                    </div>
+                    <div class="p-5 sm:p-6 bg-black text-white">
+                        <p class="italic text-sm sm:text-base">"Our absolute priority is the long-term health of your hair. We use only premium products to ensure that your color stays vibrant and your cut remains manageable for weeks after you leave the salon."</p>
+                        <span class="block mt-3 text-[9px] tracking-widest">— EMMA, FOUNDER & MASTER STYLIST</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="reviews" class="py-24 sm:py-40 bg-[#0A0A0A] border-t border-white/5">
+        <div class="px-5 sm:px-10 mb-12 sm:mb-20 text-center">
+            <span class="text-[9px] sm:text-[10px] tracking-[0.5em] uppercase text-[#AF8F5C] block mb-4 sm:mb-6">Testimonials</span>
+            <h2 class="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter uppercase">
+                Artistry In <span class="text-outline">Motion</span>
+            </h2>
+        </div>
+
+        <div class="marquee">
+            <div class="marquee__group">
+                <div class="review-card">
+                    <div class="flex gap-1 mb-4 text-[#AF8F5C]"><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
+                    <p class="text-sm text-[#888] italic mb-6">"Finally! A stylist who speaks perfect English and actually understands my hair texture. My balayage has never looked this natural."</p>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white">Sarah M. — UK Expat</span>
+                </div>
+                <div class="review-card">
+                    <div class="flex gap-1 mb-4 text-[#AF8F5C]"><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
+                    <p class="text-sm text-[#888] italic mb-6">"Emma is a genius. I've lived in Paris for 5 years and this is the first time I've left a salon truly happy. The attention to detail is unmatched."</p>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white">Julianne T. — New York</span>
+                </div>
+                <div class="review-card">
+                    <div class="flex gap-1 mb-4 text-[#AF8F5C]"><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
+                    <p class="text-sm text-[#888] italic mb-6">"Best men's cut in the 5th. Professional, fast, and exactly what I asked for. The head massage was a nice bonus."</p>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white">David L. — Tech Consultant</span>
+                </div>
+                <div class="review-card">
+                    <div class="flex gap-1 mb-4 text-[#AF8F5C]"><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
+                    <p class="text-sm text-[#888] italic mb-6">"If you're an expat in Paris, Sequence is the only place to go. No stress, no language barrier, just great hair."</p>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white">Chloe B. — Student</span>
+                </div>
+            </div>
+            <div class="marquee__group" aria-hidden="true">
+                <div class="review-card">
+                    <div class="flex gap-1 mb-4 text-[#AF8F5C]"><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
+                    <p class="text-sm text-[#888] italic mb-6">"Finally! A stylist who speaks perfect English and actually understands my hair texture. My balayage has never looked this natural."</p>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white">Sarah M. — UK Expat</span>
+                </div>
+                <div class="review-card">
+                    <div class="flex gap-1 mb-4 text-[#AF8F5C]"><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
+                    <p class="text-sm text-[#888] italic mb-6">"Emma is a genius. I've lived in Paris for 5 years and this is the first time I've left a salon truly happy. The attention to detail is unmatched."</p>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white">Julianne T. — New York</span>
+                </div>
+                <div class="review-card">
+                    <div class="flex gap-1 mb-4 text-[#AF8F5C]"><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
+                    <p class="text-sm text-[#888] italic mb-6">"Best men's cut in the 5th. Professional, fast, and exactly what I asked for. The head massage was a nice bonus."</p>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white">David L. — Tech Consultant</span>
+                </div>
+                <div class="review-card">
+                    <div class="flex gap-1 mb-4 text-[#AF8F5C]"><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
+                    <p class="text-sm text-[#888] italic mb-6">"If you're an expat in Paris, Sequence is the only place to go. No stress, no language barrier, just great hair."</p>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white">Chloe B. — Student</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 sm:py-40 bg-[#0A0A0A] overflow-hidden">
+        <div class="max-w-[1800px] mx-auto px-5 sm:px-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-24 items-center">
+                <div class="relative aspect-[3/4] overflow-hidden reveal">
+                    <img src="img2.jpg"
+                         alt="Emma Sequence Paris" id="max-portrait"
+                         class="w-full h-full object-cover scale-110 grayscale hover:grayscale-0 transition-all duration-1000">
+                    <div class="absolute bottom-6 sm:bottom-10 left-6 sm:left-10">
+                        <span class="text-white text-6xl sm:text-8xl font-bold opacity-10 uppercase tracking-tighter">ARTIST</span>
+                    </div>
+                </div>
+
+                <div class="reveal">
+                    <span class="text-[9px] sm:text-[10px] tracking-[0.3em] uppercase block mb-8 sm:mb-10 text-[#AF8F5C] font-bold">02 — The Founder</span>
+                    <h2 class="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter leading-none mb-8 sm:mb-10 uppercase">
+                        HI, I'M EMMA. <br>YOUR STYLIST IN PARIS.
+                    </h2>
+                    <p class="text-base sm:text-xl text-[#888] leading-relaxed mb-8 sm:mb-10 font-medium">
+                        With a career spanning over 8 years in the heart of Paris, I have dedicated myself to serving the international community. My training at the elite London academies of L'Oréal and HeadMasters gave me a foundation of technical precision that defines every look I create today. 🇫🇷🇬🇧
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
+                        <div class="space-y-3">
+                            <h4 class="text-white font-bold tracking-widest uppercase text-xs">Expat Specialist</h4>
+                            <p class="text-sm text-[#666]">I understand the unique environmental challenges of living in Paris—from the mineral-heavy water to the seasonal shifts that affect your scalp and texture.</p>
+                        </div>
+                        <div class="space-y-3">
+                            <h4 class="text-white font-bold tracking-widest uppercase text-xs">London Precision</h4>
+                            <p class="text-sm text-[#666]">My technical background ensures that every haircut is structurally sound. This means your hair will grow out beautifully and remain easy to style at home.</p>
+                        </div>
+                        <div class="space-y-3">
+                            <h4 class="text-white font-bold tracking-widest uppercase text-xs">Color Master</h4>
+                            <p class="text-sm text-[#666]">Specialized in bespoke highlights and balayage that respect the integrity of your hair. I focus on creating multidimensional color that looks natural and luxe.</p>
+                        </div>
+                        <div class="space-y-3">
+                            <h4 class="text-white font-bold tracking-widest uppercase text-xs">Styling Education</h4>
+                            <p class="text-sm text-[#666]">I don't just "do" your hair. I teach you how to maintain its health and recreate the salon finish yourself, ensuring you look your best every day.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 sm:mt-16">
+                        <div class="px-5 sm:px-6 py-4 border border-[#AF8F5C]/30 rounded-full inline-flex items-center gap-3">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span class="text-[10px] uppercase tracking-widest font-bold">Now Accepting International Clients</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="expertise" class="py-12 sm:py-20 bg-[#0A0A0A]">
+        <div class="px-5 sm:px-10 mb-8 sm:mb-10">
+            <h2 class="text-3xl sm:text-4xl font-bold tracking-tighter uppercase text-white">Our Specialized Menu</h2>
+        </div>
+
+        <div class="flex flex-col md:flex-row w-full gap-2 px-2">
+            <div class="service-card group relative flex flex-col justify-end p-6 sm:p-10 overflow-hidden bg-[url('https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=2000')] bg-cover bg-center">
+                <div class="relative z-10">
+                    <span class="text-[10px] tracking-widest text-white/50 uppercase">01</span>
+                    <h3 class="text-2xl sm:text-3xl font-bold uppercase text-white">Color & Balayage</h3>
+                    <p class="text-sm text-white/70 md:text-white/0 md:group-hover:text-white/70 transition-all duration-500 mt-2">Bespoke color services ranging from sun-kissed balayage to full creative transformations using L'Oréal's premium range.</p>
+                </div>
+            </div>
+           
+            <div class="service-card group relative flex flex-col justify-end p-6 sm:p-10 overflow-hidden bg-[url('https://images.unsplash.com/photo-1559599101-f09722fb4948?q=80&w=2000')] bg-cover bg-center">
+                <div class="relative z-10">
+                    <span class="text-[10px] tracking-widest text-white/50 uppercase">03</span>
+                    <h3 class="text-2xl sm:text-3xl font-bold uppercase text-white">Hair Rituals</h3>
+                    <p class="text-sm text-white/70 md:text-white/0 md:group-hover:text-white/70 transition-all duration-500 mt-2">Advanced conditioning and scalp treatments designed to repair damage from Paris water and urban pollution.</p>
+                </div>
+            </div>
+            <div class="service-card group relative flex flex-col justify-end p-6 sm:p-10 overflow-hidden bg-[url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=2000')] bg-cover bg-center">
+                <div class="relative z-10">
+                    <span class="text-[10px] tracking-widest text-white/50 uppercase">04</span>
+                    <h3 class="text-2xl sm:text-3xl font-bold uppercase text-white">Styling & Finish</h3>
+                    <p class="text-sm text-white/70 md:text-white/0 md:group-hover:text-white/70 transition-all duration-500 mt-2">Professional blow-dries, event styling, and personalized home-care consultations to keep your look salon-fresh.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="pt-20 sm:pt-32 pb-8 sm:pb-10 px-5 sm:px-10 border-t border-white/5 bg-[#0A0A0A]">
+        <div class="max-w-[1800px] mx-auto">
+            <div class="mb-12 sm:mb-24 overflow-hidden">
+                <h2 class="text-[10vw] sm:text-[8vw] font-bold text-outline uppercase leading-none opacity-50">Book Emma's Chair</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-16 mb-16 sm:mb-24">
+                <div>
+                    <span class="text-[10px] tracking-[0.3em] uppercase block mb-6 sm:mb-8 text-[#AF8F5C] font-bold">Contact</span>
+                    <ul class="space-y-4">
+                        <li>
+                            <a href="mailto:contact@sequenceparis.com" class="social-link text-base sm:text-lg">
+                                <i data-lucide="mail"></i>
+                                <span class="text-xs sm:text-sm">contact@sequenceparis.com</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tel:+33183064677" class="social-link text-base sm:text-lg">
+                                <i data-lucide="phone"></i>
+                                <span class="text-xs sm:text-sm">01 83 06 46 77</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="text-[10px] tracking-[0.3em] uppercase block mb-6 sm:mb-8 text-[#AF8F5C] font-bold">Hours</span>
+                    <ul class="space-y-3 text-sm text-[#888]">
+                        <li>Tue - Fri: 10:00 - 17:00</li>
+                        <li>Thu: 10:00 - 20:00 (Late Night)</li>
+                        <li>Sat: 09:00 - 17:00</li>
+                        <li>Sun - Mon: Closed</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="text-[10px] tracking-[0.3em] uppercase block mb-6 sm:mb-8 text-[#AF8F5C] font-bold">Find Us</span>
+                    <p class="text-sm text-[#888] flex gap-2 items-start mb-4">
+                        <i data-lucide="map-pin" class="w-4 h-4 mt-1 flex-shrink-0"></i>
+                        13 rue des Lyonnais<br>75005 Paris, France
+                    </p>
+                    <ul class="text-[10px] text-white/40 space-y-1">
+                        <li>Metro Line 7: Censier-Daubenton</li>
+                        <li>RER B: Port-Royal</li>
+                    </ul>
+                </div>
+
+                <div class="flex flex-col justify-between gap-8">
+                    <div>
+                        <span class="text-[10px] tracking-[0.3em] uppercase block mb-6 sm:mb-8 text-[#AF8F5C] font-bold">By Appointment Only</span>
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                            <span class="text-[10px] uppercase tracking-widest text-white">Secure Your Slot Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-center pt-8 sm:pt-10 border-t border-white/5 gap-4">
+                <div class="text-[9px] tracking-[0.5em] text-[#444] uppercase text-center sm:text-left">
+                    © 2026 SEQUENCE PARIS — THE INTERNATIONAL HUB FOR HAIR EXCELLENCE
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        Splitting();
+        gsap.registerPlugin(ScrollTrigger);
+
+        const cursor = document.querySelector('#cursor');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
+        });
+
+        let menuOpen = false;
+        function toggleMobileMenu() {
+            menuOpen = !menuOpen;
+            const menu = document.getElementById('mobile-menu');
+            const top = document.getElementById('hb-top');
+            const mid = document.getElementById('hb-mid');
+            const bot = document.getElementById('hb-bottom');
+            if (menuOpen) {
+                menu.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                top.style.transform = 'translateY(6.5px) rotate(45deg)';
+                mid.style.opacity = '0';
+                bot.style.transform = 'translateY(-6.5px) rotate(-45deg)';
+                bot.style.width = '1.5rem';
+                bot.style.alignSelf = 'center';
+            } else {
+                closeMobileMenu();
+            }
+        }
+        function closeMobileMenu() {
+            menuOpen = false;
+            document.getElementById('mobile-menu').classList.remove('open');
+            document.body.style.overflow = '';
+            document.getElementById('hb-top').style.transform = '';
+            document.getElementById('hb-mid').style.opacity = '1';
+            const bot = document.getElementById('hb-bottom');
+            bot.style.transform = '';
+            bot.style.width = '1rem';
+            bot.style.alignSelf = 'flex-start';
+        }
+
+        const tl = gsap.timeline();
+        tl.to('#hero-mini-tag', { y: 0, duration: 1, ease: "power4.out", delay: 0.5 })
+          .to('.char', { y: 0, opacity: 1, stagger: 0.03, duration: 1, ease: "expo.out" }, "-=0.5")
+          .to('#hero-stats', { opacity: 1, y: -20, duration: 1.5 }, "-=0.7");
+
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+        if (!isMobile) {
+            gsap.to('#hero-bg', {
+                scrollTrigger: { trigger: 'section', start: 'top top', end: 'bottom top', scrub: true },
+                y: 200, scale: 1
+            });
+            gsap.to('#max-portrait', {
+                scrollTrigger: { trigger: '#max-portrait', start: 'top bottom', end: 'bottom top', scrub: true },
+                y: -100
+            });
+        }
+
+        gsap.utils.toArray('.reveal').forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: { trigger: el, start: "top 88%" },
+                y: 50, opacity: 0, duration: 1.5, ease: "power4.out"
+            });
+        });
+    </script>
+</body>
+</html>
