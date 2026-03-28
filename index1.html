@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequence Paris | Premium Hair Artistry</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@200;300;400;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-bg: #FDFCFB; 
+            --color-text: #121212;
+            --color-accent: #C5A059; /* Более глубокое золото */
+            --font-heading: 'Cormorant Garamond', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; } /* Скрываем дефолтный курсор для кастомного */
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.7;
+        }
+
+        /* --- ПРЕМИАЛЬНЫЙ КУРСОР --- */
+        #cursor {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--color-accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+        }
+        #cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--color-accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transition: all 0.3s ease-out;
+        }
+
+        /* --- ХЕДЕР С ЭФФЕКТОМ СТЕКЛА --- */
+        header {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 30px 0;
+            z-index: 1000;
+            transition: all 0.5s ease;
+        }
+        header.scrolled {
+            padding: 15px 0;
+            background: rgba(253, 252, 251, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(197, 160, 89, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        /* --- HERO С ПЛАВНЫМ ПЕРЕХОДОМ --- */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #000;
+        }
+        .hero-video {
+            position: absolute;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+            transform: scale(1.1); /* Для эффекта при загрузке */
+            animation: heroZoom 10s infinite alternate;
+        }
+        @keyframes heroZoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-style: italic;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1.5s forwards 0.5s;
+        }
+
+        /* --- КНОПКИ С ЭФФЕКТОМ ШЕПОТА --- */
+        .btn {
+            position: relative;
+            padding: 20px 50px;
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-size: 0.7rem;
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            overflow: hidden;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: white;
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: -1;
+        }
+        .btn:hover { color: black; border-color: white; }
+        .btn:hover::before { left: 0; }
+
+        /* --- СЕКЦИИ --- */
+        .section { padding: 160px 0; }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: center;
+        }
+
+        .reveal-img-container {
+            overflow: hidden;
+            position: relative;
+        }
+        .reveal-img-container img {
+            width: 100%;
+            transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .reveal-img-container:hover img {
+            transform: scale(1.05);
+        }
+
+        h2 {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            line-height: 1;
+        }
+
+        .gold-link {
+            color: var(--color-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.8rem;
+            font-weight: 600;
+            position: relative;
+        }
+        .gold-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px; left: 0;
+            width: 0; height: 1px;
+            background: var(--color-accent);
+            transition: width 0.4s ease;
+        }
+        .gold-link:hover::after { width: 100%; }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            * { cursor: auto !important; }
+            #cursor, #cursor-follower { display: none; }
+            .grid-2 { grid-template-columns: 1fr; gap: 50px; }
+            h2 { font-size: 2.5rem; }
+            .section { padding: 80px 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+
+    <header id="header">
+        <div class="nav-container">
+            <div class="logo">Sequence</div>
+            <div class="btn" style="padding: 10px 25px; font-size: 0.6rem; color: var(--color-text); border-color: var(--color-text);">Reserve</div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <video autoplay loop muted playsinline class="hero-video">
+            <source src="https://player.vimeo.com/external/494299770.hd.mp4?s=630327f168c9354972e3995f00e6205e608f6578&profile_id=175" type="video/mp4">
+        </video>
+        <div class="hero-content">
+            <h1 data-aos="fade-up" data-aos-duration="2000">The Art of Sequence</h1>
+            <p data-aos="fade-up" data-aos-delay="300" style="letter-spacing: 0.5em; text-transform: uppercase; font-size: 0.8rem; opacity: 0.8;">London Mastery • Paris Elegance</p>
+            <br><br>
+            <div data-aos="fade-up" data-aos-delay="600">
+                <a href="#" class="btn">Start Your Story</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section container" style="max-width: 1200px; margin: 0 auto;">
+        <div class="grid-2">
+            <div class="reveal-img-container" data-aos="reveal-right">
+                <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=800&auto=format&fit=crop" alt="Premium Hair">
+            </div>
+            <div class="content" data-aos="fade-left">
+                <span style="color: var(--color-accent); text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.7rem;">01. Expertise</span>
+                <h2 style="margin-top: 20px;">The Emma Factor</h2>
+                <p>Finding a stylist who understands your vision shouldn't be a challenge. At Sequence, we bridge the gap between British technique and French elegance.</p>
+                <br>
+                <a href="#" class="gold-link">Discover the technique</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background: #121212; color: white; text-align: center;">
+        <div data-aos="zoom-in" data-aos-duration="1500">
+            <span style="letter-spacing: 0.5em; font-size: 0.7rem; opacity: 0.5;">SIGNATURE SERVICES</span>
+            <h2 style="font-style: italic; margin: 20px 0;">Quiet Luxury for Your Hair</h2>
+            <div style="display: flex; justify-content: center; gap: 50px; margin-top: 40px; flex-wrap: wrap;">
+                <div style="max-width: 250px;">
+                    <h3 style="font-family: var(--font-heading); font-size: 1.5rem;">Balayage</h3>
+                    <p style="font-size: 0.8rem; opacity: 0.6;">Sunkissed perfection tailored to your natural movement.</p>
+                </div>
+                <div style="max-width: 250px;">
+                    <h3 style="font-family: var(--font-heading); font-size: 1.5rem;">Precision</h3>
+                    <p style="font-size: 0.8rem; opacity: 0.6;">Architecture in hair. Cuts that hold their shape for months.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Инициализация анимаций
+        AOS.init({
+            duration: 1000,
+            once: false,
+            mirror: true
+        });
+
+        // Кастомный курсор
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                follower.style.left = e.clientX - 15 + 'px';
+                follower.style.top = e.clientY - 15 + 'px';
+            }, 50);
+        });
+
+        // Эффект хедера при скролле
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Увеличение курсора на ссылках
+        const links = document.querySelectorAll('a, .btn');
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                follower.style.transform = 'scale(2)';
+                follower.style.background = 'rgba(197, 160, 89, 0.1)';
+            });
+            link.addEventListener('mouseleave', () => {
+                follower.style.transform = 'scale(1)';
+                follower.style.background = 'transparent';
+            });
+        });
+    </script>
+</body>
+</html>
